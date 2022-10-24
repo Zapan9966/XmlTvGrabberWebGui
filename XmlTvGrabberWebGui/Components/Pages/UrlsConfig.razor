@@ -1,0 +1,85 @@
+﻿@using Microsoft.AspNetCore.Components
+@using XmlTvGrabberWebGui.Data
+
+@inject GrabberContext context
+@inject IJSRuntime jsRuntime
+
+<EditForm Model="@NewUrl" OnValidSubmit="@Save">
+    <DataAnnotationsValidator />
+    <input type="hidden" id="XmlUrlId" name="XmlUrlId" @bind-value="NewUrl.XmlUrlId" />
+    <input type="hidden" id="Index" name="Index" @bind-value="NewUrl.Index" />
+    <table class="table table-sm mb-0">
+        <tbody>
+            <tr>
+                <td class="border-0">
+                    <input type="text" name="Url" class="form-control form-control-sm" placeholder="Ajouter une URL" required
+                           data-val="true" data-val-required="L'URL est requise." @bind-value="NewUrl.Url" />
+                    <span class="text-danger field-validation-valid" data-valmsg-for="Url" data-valmsg-replace="true"></span>
+                </td>
+                <td class="border-0" style="width:5%;">
+                    <button type="submit" class="btn btn-sm btn-outline-success h-100 w-100 d-inline-block" title="Ajouter">
+                        <i class="far fa-save btn-ico"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</EditForm>
+<hr />
+@if (!string.IsNullOrEmpty(StatusMessage))
+{
+    <div class="alert alert-@((StatusMessage?.StartsWith("Erreur") ?? false) ? "danger" : "success") alert-dismissible mt-3" role="alert">
+        @((MarkupString)StatusMessage)
+        <button type="button" class="close" aria-label="Close" @onclick="@(() => StatusMessage = null)">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+@if (context.XmlUrls.Any())
+{
+    <table class="table table-sm mb-0">
+        <thead class="thead-light">
+            <tr>
+                <th style="width:3%">#</th>
+                <th>URL</th>
+            </tr>
+        </thead>
+    </table>
+    @foreach (var url in context.XmlUrls.OrderBy(x => x.Index))
+    {
+        <EditForm Model="@url" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <input type="hidden" id="XmlUrlId" name="XmlUrlId" @bind-value="url.XmlUrlId" />
+            <input type="hidden" id="Index" name="Index" @bind-value="url.Index" />
+            <table class="table table-sm mb-0">
+                <tr>
+                    <td style="width:3%;">@url.Index</td>
+                    <td>
+                        <input type="text" name="Url" class="form-control form-control-sm" placeholder="URL" required
+                               data-val="true" data-val-required="L'URL est requise." @bind-value="url.Url" />
+                        <span class="text-danger field-validation-valid" data-valmsg-for="Url" data-valmsg-replace="true"></span>
+                    </td>
+                    <td style="width:1%;">
+                        <div class="btn-toolbar" role="toolbar" aria-label="URL toolbar">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-info" @onclick="@(async () => await Up(url.XmlUrlId))" title="Monter">
+                                    <i class="fas fa-arrow-up"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-info" @onclick="@(async () => await Down(url.XmlUrlId))" title="Descendre">
+                                    <i class="fas fa-arrow-down"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger" @onclick="@(async () => await Delete(url.XmlUrlId))" title="Supprimer">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <button type="submit" class="btn btn-sm btn-outline-success" title="Enregistrer">
+                                    <i class="far fa-save btn-ico"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </EditForm>
+    }
+}

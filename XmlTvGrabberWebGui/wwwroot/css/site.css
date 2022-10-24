@@ -1,0 +1,151 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+html {
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
+    height: 100%;
+}
+
+body {
+    padding-top: 50px;
+    margin-bottom: 70px;
+    min-height: calc(100% - 70px);
+    height: calc(100% - 70px);
+}
+
+.body-container {
+    height: 100%;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;
+}
+
+.nav-pills.flex-column > .nav-item > .nav-link {
+    position: relative;
+}
+
+    .nav-pills.flex-column > .nav-item > .nav-link > .fa-caret-right {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+/*#region flex row */
+
+.row.is-flex,
+.form-group.is-flex {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+    .row.is-flex > [class*='col-'],
+    .form-group.is-flex > [class*='col-'] {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+        flex-direction: column;
+    }
+
+        .row.is-flex > [class*='col-'] > .panel,
+        .row.is-flex > [class*='col-'] > .card,
+        .row.is-flex > [class*='col-'] > .btn,
+        .form-group.is-flex > [class*='col-'] > .panel,
+        .form-group.is-flex > [class*='col-'] > .card,
+        .form-group.is-flex > [class*='col-'] > .btn {
+            height: 100%;
+        }
+
+/*#endregion */
+
+
+/*#region flex container */
+
+.flex-container,
+.flex-container-layout {
+    display: flex;
+    display: -ms-flexbox;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+}
+
+.flex-container-top .table,
+.flex-container-layout-render .table {
+    margin-bottom: 0;
+}
+
+.flex-container-top > .table,
+.flex-container-layout-header .table {
+    width: calc(100% - 17px);
+}
+
+.flex-container-top > form {
+    padding-right: 17px;
+}
+
+.flex-container-bottom {
+    flex-grow: 1;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    position: relative;
+    min-height: 0;
+}
+
+.flex-container-layout-header {}
+
+.flex-container-layout-content,
+.flex-container-layout-render {
+    display: flex;
+    display: -ms-flexbox;
+    overflow: hidden;
+}
+
+    .flex-container-layout-content { 
+        height: 100%; 
+
+    }
+
+    .flex-container-layout-render {
+        flex-direction: column;
+    }
+
+    .flex-container-layout-content > *,
+    .flex-container-layout-render  > * {
+        flex: 1 1 auto;
+    }
+
+.flex-container-layout-header {
+    flex: 0 0 auto;
+}
+
+.flex-container-layout-overflow {
+    overflow-y: auto;
+}
+
+/*#endregion */
+
+#components-reconnect-modal {
+    z-index: 2000 !important;
+}
+
+#components-reconnect-modal > h5 {
+    margin-top: 150px !important;
+}

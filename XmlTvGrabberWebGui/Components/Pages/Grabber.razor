@@ -1,0 +1,36 @@
+﻿@using Microsoft.AspNetCore.Components
+
+@inject IJSRuntime jsRuntime
+@inject XmlTvGrabberWebGui.Data.GrabberContext context
+@inject Microsoft.Extensions.Logging.ILogger<Grabber> logger
+@inject XmlTvGrabberWebGui.Helpers.GlobalProperties.IGlobalProperties globals
+
+<div class="flex-container-layout-render">
+    <div class="flex-container-layout-header">
+        <div class="row">
+            <div class="col-4">
+                <button @onclick="@Start" class="btn btn-outline-success" disabled="@IsRunning">Démarrer</button>
+                <button @onclick="@Reset" class="btn btn-outline-warning" disabled="@IsRunning" style="@ResetVisibility">Reset EPG</button>
+            </div>
+            <div class="col-8">
+                <div class="alert alert-warning text-center m-0 p-2 @(!IsRunning ? "d-none" : null)" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;Mise à jour des programmes en cours, ne pas quitter ou actualiser la page.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex-container-layout-overflow mt-3 " style="overflow: hidden;">
+        <div id="progressContent" class="card bg-light h-100" style="overflow-y: auto;">
+            <div class="card-body">
+                @((MarkupString)Progress)
+                <div class="progress" style="display:@ProgressBarDisplay;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar"
+                         aria-valuenow="@(ProgressPercent)" aria-valuemin="0" aria-valuemax="100"
+                         style="width:@ProgressPercent%;">
+                        @ProgressPercent %
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

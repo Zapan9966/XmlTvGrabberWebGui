@@ -1,0 +1,121 @@
+﻿@model IEnumerable<TvHeadendCategory>
+
+@{
+    Layout = "_LayoutCategories.cshtml";
+}
+
+<div class="flex-container-layout-header">
+    <partial name="_StatusMessage" model="@ViewData["StatusMessage"]" />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div id="accordion" class="mb-1" style="margin-right: 17px;">
+        <div class="card border-info">
+            <div class="card-header p-0 border-info" id="header-new">
+                <button class="btn btn-outline-info text-left w-100 border-0" data-toggle="collapse" data-target="#content-new" aria-expanded="false" aria-controls="content-new">
+                    Ajouter un catégorie
+                </button>
+            </div>
+            <div id="content-new" class="collapse" aria-labelledby="header-new" data-parent="#accordion">
+                <form method="post" asp-action="TvHeadendCategories">
+                    <input type="hidden" name="searchGroup" value="@ViewData["Group"]" />
+                    <input type="hidden" name="searchName" value="@ViewData["Name"]" />
+                    <input type="hidden" name="TvHeadendCategoryId" value="0" />
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td class="w-25 border-0">
+                                    <input type="text" name="Group" class="form-control form-control-sm" placeholder="Groupe" required
+                                            data-val="true" data-val-required="Le groupe est requis." />
+                                    <span class="text-danger field-validation-valid" data-valmsg-for="Group" data-valmsg-replace="true"></span>
+                                </td>
+                                <td class="border-0">
+                                    <input type="text" name="Name" class="form-control form-control-sm" placeholder="Nom" required
+                                            data-val="true" data-val-required="Le nom est requis." />
+                                    <span class="text-danger field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+                                </td>
+                                <td class="border-0" style="width:5%;">
+                                    <button type="submit" class="btn btn-sm btn-outline-success h-100 w-100 d-inline-block" title="Enregistrer">
+                                        <i class="far fa-save btn-ico"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+    <form method="get" asp-action="TvHeadendCategories">
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col" class="align-middle w-25">
+                        <label for="group">Groupe</label>
+                        <input type="text" class="form-control form-control-sm" id="group" name="group" value="@ViewData["Group"]" />
+                    </th>
+                    <th scope="col" class="align-middle">
+                        <label for="name">Nom</label>
+                        <input type="text" class="form-control form-control-sm" id="name" name="name" value="@ViewData["Name"]" />
+                    </th>
+                    <th scope="col" class="align-bottom" style="width:11.5%;">
+                        <button type="submit" class="btn btn-sm btn-outline-primary w-100 d-inline-block">
+                            <i class="fas fa-search btn-ico"></i>
+                        </button>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </form>
+</div>
+<div class="flex-container-layout-overflow">
+    @if (Model.Any())
+    {
+        @foreach (var categorie in Model)
+        {
+            <form method="post" asp-action="TvHeadendCategories">
+                <input type="hidden" name="searchGroup" value="@ViewData["Group"]" />
+                <input type="hidden" name="searchName" value="@ViewData["Name"]" />
+                <input type="hidden" name="TvHeadendCategoryId" value="@categorie.TvHeadendCategoryId" />
+                <table class="table table-hover">
+                    <tbody>
+                        <tr>
+                            <td class="w-25">
+                                <input type="text" name="Group" class="form-control form-control-sm" placeholder="Groupe" value="@categorie.Group" required
+                                        data-val="true" data-val-required="Le groupe est requis." />
+                                <span class="text-danger field-validation-valid" data-valmsg-for="Group" data-valmsg-replace="true"></span>
+                            </td>
+                            <td>
+                                <input type="text" name="Name" class="form-control form-control-sm" placeholder="Nom" value="@categorie.Name" required
+                                        data-val="true" data-val-required="Le nom est requis." />
+                                <span class="text-danger field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+                            </td>
+                            <td style="width:5%;">
+                                <button type="submit" class="btn btn-sm btn-outline-success h-100 w-100 d-inline-block" title="Enregistrer">
+                                    <i class="far fa-save btn-ico"></i>
+                                </button>
+                            </td>
+                            <td style="width:5%;">
+                                <a asp-action="DeleteTvHeadendCategory" asp-route-id="@categorie.TvHeadendCategoryId" 
+                                    class="btn btn-sm btn-outline-danger h-100 w-100 d-inline-block" title="Supprimer">
+                                    <i class="fas fa-times btn-ico"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        }
+    }
+    else
+    {
+        <h3 class="text-danger text-center">Aucune catégorie(s) configurée(s)</h3>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+    </script>
+}

@@ -1,0 +1,167 @@
+﻿@using XmlTvGrabberWebGui.Helpers.Logger
+@using Microsoft.Extensions.Logging
+@model IEnumerable<Trace>
+
+@{ 
+    var eventIds = typeof(AppLogEvents)
+        .GetFields()
+        .Select(f =>
+        {
+            int? value = int.Parse(f.GetValue(null)?.ToString() ?? "0");
+            string name = $"{value} - {f.Name}";
+            string group = value < 9000 ? "Information"
+                : value >= 9000 && value < 10000 ? "Warning"
+                : value >= 10000 ? "Error"
+                : string.Empty;
+
+            return new { Name = name, Value = value, Group = group };
+        })
+        .ToList();
+
+    eventIds.Insert(0, new { Name = "", Value = new int?(), Group = "" });
+
+
+    var logLevels = ((int[])Enum.GetValues(typeof(LogLevel)))
+        .Select(i => new { Name = Enum.GetName(typeof(LogLevel), i), Value = i.ToString() })
+        .ToList();
+
+    logLevels.Insert(0, new { Name = "", Value = "" });
+
+}
+
+@section CSS {
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/tempusdominus/css/tempusdominus-bootstrap-4.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" asp-append-version="true" />
+    </environment>
+}
+
+<div class="flex-container">
+    <div class="flex-container-top pt-3">
+
+        <form asp-action="LogViewer" method="get" >
+
+            <div class="form-group row">
+                <label class="col-1 col-form-label col-form-label-sm">Du</label>
+                <div class="col-sm-2">
+                    <div class="input-group input-group-sm date" id="debut" data-target-input="nearest">
+                        <input type="text" name="Debut" class="form-control datetimepicker-input" data-target="#debut" value="@ViewData["Debut"]" />
+                        <div class="input-group-append" data-target="#debut" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <label class="col-1 col-form-label col-form-label-sm">Au</label>
+                <div class="col-sm-2">
+                    <div class="input-group input-group-sm date" id="fin" data-target-input="nearest">
+                        <input type="text" name="Fin" class="form-control datetimepicker-input" data-target="#fin" value="@ViewData["Fin"]" />
+                        <div class="input-group-append" data-target="#fin" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-1 col-form-label col-form-label-sm">Level</label>
+                <div class="col-2">
+                    <select asp-items="@(new SelectList(logLevels, "Value", "Name", ViewData["LogLevel"]))" name="LogLevel" 
+                            class="custom-select custom-select-sm"></select>
+                </div>
+                <label class="col-1 col-form-label col-form-label-sm">EventId</label>
+                <div class="col-4">
+                    <select asp-items="@(new SelectList(eventIds, "Value", "Name", ViewData["EventId"], "Group"))" name="EventId" 
+                            class="custom-select custom-select-sm"></select>
+                </div>
+                <div class="col-1">
+                    <button type="submit" class="btn btn-sm btn-outline-primary w-100 d-inline-block">
+                        <i class="fas fa-search btn-ico"></i>
+                    </button>
+                </div>
+            </div>
+
+        </form>
+
+        <table class="table table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th style="width:12%">Date/Heure</th>
+                    <th style="width:8%">Level</th>
+                    <th style="width:7%">EventId</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="flex-container-bottom">
+        <table class="table table-sm">
+            @foreach (var log in Model)
+            {
+                <tr>
+                    <td style="width:12%"><small>@log.Date.ToString("dd/MM/yyyy HH:mm:ss")</small></td>
+                    <td style="width:8%" class="@log.LogLevel.ApplyStyle()"><small>@log.LogLevel</small></td>
+                    <td style="width:7%"><small>@log.EventId</small></td>
+                    <td><small>@Html.Raw(log.Message.Nl2br())</small></td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/lib/tempusdominus/js/tempusdominus-bootstrap-4.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+
+        
+
+        $(document).ready(function () {
+
+            $('.date').datetimepicker({
+                locale: 'fr',
+                format: 'DD/MM/YYYY',
+                buttons: {
+                    showToday: true,
+                },
+                tooltips: {
+                    today: 'Aujourd\'hui',
+                    clear: 'Supprimer sélection',
+                    close: 'Fermer',
+                    selectMonth: 'Sélecction mois',
+                    prevMonth: 'Mois précédent',
+                    nextMonth: 'Mois suivant',
+                    selectYear: 'Sélection année',
+                    prevYear: 'Année précédente',
+                    nextYear: 'Année suivante',
+                    selectDecade: 'Sélection décennie',
+                    prevDecade: 'Décennie précédente',
+                    nextDecade: 'Décennie suivante',
+                    prevCentury: 'Siècle précédent',
+                    nextCentury: 'Siècle suivant',
+                    pickHour: 'Sélection heures',
+                    incrementHour: 'Augmenter heures',
+                    decrementHour: 'Diminuer heures',
+                    pickMinute: 'Sélection minutes',
+                    incrementMinute: 'Augmenter minutes',
+                    decrementMinute: 'Diminuer minutes',
+                    pickSecond: 'Sélection secondes',
+                    incrementSecond: 'Augmenter secondes',
+                    decrementSecond: 'Diminuer secondes',
+                    togglePeriod: 'Afficher/masquer période',
+                    selectTime: 'Sélection temps',
+                    selectDate: 'Sélection date'
+                },
+            });
+
+        });
+    </script>
+}
+
+

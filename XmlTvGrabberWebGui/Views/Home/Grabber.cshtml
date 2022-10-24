@@ -1,0 +1,23 @@
+﻿<div class="flex-container-layout">
+    <div class="flex-container-layout-header">
+        <h1>@ViewData["Title"]</h1>
+        <hr />
+    </div>
+    <div class="flex-container-layout-content">
+        <component type="typeof(Grabber)" render-mode="ServerPrerendered" />
+    </div>
+</div>
+
+@section Scripts {
+    <script src="_framework/blazor.server.js"></script>
+    <script>
+
+        function onProgressUpdate() {
+            $('#progressContent').animate({ scrollTop: $('#progressContent')[0].scrollHeight}, 'slow');
+        }
+
+        $(document).ready(function () {
+
+        });
+    </script>
+}

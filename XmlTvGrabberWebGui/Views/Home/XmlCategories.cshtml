@@ -1,0 +1,148 @@
+﻿@model XmlCategoriesViewModel
+
+@{
+    Layout = "_LayoutCategories.cshtml";
+}
+
+@section LayoutMenu {
+    <ul class="nav nav-pills float-right mt-2">
+        <li class="nav-item">
+            <a class="nav-link @(Model.ShowAll != true ? "active" : null)" asp-action="XmlCategories" asp-route-showAll="false" 
+               asp-route-xmlCategory="@ViewData["XmlCategory"]" asp-route-tvHeadendCategory="@ViewData["TvHeadendCategory"]">
+                Non affectés
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(Model.ShowAll == true ? "active" : null)" asp-action="XmlCategories" asp-route-showAll="true"
+               asp-route-xmlCategory="@ViewData["XmlCategory"]" asp-route-tvHeadendCategory="@ViewData["TvHeadendCategory"]">
+                Tous
+            </a>
+        </li>
+    </ul>
+}
+
+<div class="flex-container-layout-header">
+    <partial name="_StatusMessage" model="@ViewData["StatusMessage"]" />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div id="accordion" class="mb-1" style="margin-right: 17px;">
+        <div class="card border-info">
+            <div class="card-header p-0 border-info" id="header-new">
+                <button class="btn btn-outline-info text-left w-100 border-0" data-toggle="collapse" data-target="#content-new" aria-expanded="false" aria-controls="content-new">
+                    Ajouter un catégorie
+                </button>
+            </div>
+            <div id="content-new" class="collapse" aria-labelledby="header-new" data-parent="#accordion">
+                <form method="post" asp-action="XmlCategories" asp-route-showAll="@Model.ShowAll">
+                    <input type="hidden" name="xmlCategory" value="@ViewData["XmlCategory"]" />
+                    <input type="hidden" name="tveCategory" value="@ViewData["tveCategory"]" />
+                    <input type="hidden" name="XmlCategoryId" value="0" />
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td class="border-0" style="width:35%;">
+                                    <input type="text" name="Name" class="form-control form-control-sm" placeholder="Catégorie XML" required
+                                           data-val="true" data-val-required="La catégorie XML est requise." />
+                                    <span class="text-danger field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+                                </td>
+                                <td class="border-0">
+                                    <select asp-items="@(new SelectList(Model.TvHeadendCategories, "TvHeadendCategoryId", "Name", 0, "Group"))"
+                                            name="TvHeadendCategoryId" class="custom-select custom-select-sm" data-val="true" data-rule-min="1" required
+                                            data-val-required="La catégorie TvHeadend est requise." data-msg-min="La catégorie TvHeadend est requise.">
+                                    </select>
+                                    <span class="text-danger field-validation-valid" data-valmsg-for="TvHeadendCategoryId" data-valmsg-replace="true"></span>
+                                </td>
+                                <td class="border-0" style="width:5%;">
+                                    <button type="submit" class="btn btn-sm btn-outline-success h-100 w-100 d-inline-block" title="Enregistrer">
+                                        <i class="far fa-save btn-ico"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+    <form method="get" asp-action="XmlCategories">
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col" class="align-middle" style="width:35%;">
+                        <label for="xmlCategory">Catégorie XML</label>
+                        <input type="text" class="form-control form-control-sm" id="xmlCategory" name="xmlCategory" value="@ViewData["XmlCategory"]" />
+                    </th>
+                    <th scope="col" class="align-middle">
+                        <label for="tvHeadendCategory">Catégorie TvHeadend</label>
+                        <input type="text" class="form-control form-control-sm" id="tveCategory" name="tveCategory" value="@ViewData["tveCategory"]" />
+                    </th>
+                    <th scope="col" class="align-bottom" style="width:11.5%;">
+                        <button type="submit" class="btn btn-sm btn-outline-primary w-100 d-inline-block">
+                            <i class="fas fa-search btn-ico"></i>
+                        </button>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </form>
+</div>
+<div class="flex-container-layout-overflow">
+    @if (Model.XmlCategories.Any())
+    {
+        @foreach (var categorie in Model.XmlCategories)
+        {
+            <form method="post" asp-action="XmlCategories" asp-route-showAll="@Model.ShowAll">
+                <input type="hidden" name="xmlCategory" value="@ViewData["XmlCategory"]" />
+                <input type="hidden" name="tveCategory" value="@ViewData["tveCategory"]" />
+                <input type="hidden" name="XmlCategoryId" value="@categorie.XmlCategoryId" />
+                <table class="table table-hover">
+                    <tbody>
+                        <tr>
+                            <td style="width:35%;">
+                                <input type="text" name="Name" class="form-control form-control-sm" placeholder="Catégorie XML" value="@categorie.Name" required
+                                       data-val="true" data-val-required="La catégorie XML est requise." />
+                                <span class="text-danger field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+                            </td>
+                            <td>
+                                <select asp-items="@(new SelectList(Model.TvHeadendCategories, "TvHeadendCategoryId", "Name", categorie.TvHeadendCategoryId ?? 0, "Group"))"
+                                        name="TvHeadendCategoryId" class="custom-select custom-select-sm" data-val="true" data-rule-min="1" required
+                                        data-val-required="La catégorie TvHeadend est requise." data-msg-min="La catégorie TvHeadend est requise.">
+                                </select>
+                                <span class="text-danger field-validation-valid" data-valmsg-for="TvHeadendCategoryId" data-valmsg-replace="true"></span>
+                            </td>
+                            <td style="width:5%;">
+                                <button type="submit" class="btn btn-sm btn-outline-success h-100 w-100 d-inline-block" title="Enregistrer">
+                                    <i class="far fa-save btn-ico"></i>
+                                </button>
+                            </td>
+                            <td style="width:5%;">
+                                <a asp-action="DeleteXmlCategory" asp-route-id="@categorie.XmlCategoryId"
+                                   class="btn btn-sm btn-outline-danger h-100 w-100 d-inline-block" title="Supprimer">
+                                    <i class="fas fa-times btn-ico"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        }
+    }
+    else if (Model.ShowAll != true)
+    {
+        <h3 class="text-danger text-center">Aucune catégorie à affecter</h3>
+    }
+    else
+    {
+        <h3 class="text-danger text-center">Aucune catégorie configurée</h3>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+    </script>
+}
+
+

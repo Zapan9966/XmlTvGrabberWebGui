@@ -1,0 +1,137 @@
+﻿@inject XmlTvGrabberWebGui.Data.GrabberContext db
+
+@{
+
+    var lastError = db.Traces
+        .OrderByDescending(t => t.Date)
+        .FirstOrDefault(t => t.EventId >= 10000 && t.FileProcessingId == null);
+}
+
+<div class="flex-container">
+    <div class="flex-container-bottom" style="overflow-y:auto;">
+
+        <div class="row is-flex mt-3">
+            <div class="col-8">
+                <div class="card border-info">
+                    <div class="card-header bg-info text-white">Configuration</div>
+                    <table class="m-2">
+                        <tbody>
+                            <tr>
+                                <td class="text-right font-weight-bold text-nowrap border-0">Nom fichier XML local :</td>
+                                <td class="w-100 border-0">@db.Configs.FirstOrDefault()?.OutputFilename</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right font-weight-bold text-nowrap border-0">Sock Unix :</td>
+                                <td class="w-100 border-0">@db.Configs.FirstOrDefault()?.SockPath</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right font-weight-bold text-nowrap border-0">Base de données EPG :</td>
+                                <td class="w-100 border-0">@db.Configs.FirstOrDefault()?.EpgDatabasePath</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card border-info">
+                    <div class="card-header bg-info text-white">Catégories</div>
+                    <table class="m-2">
+                        <tbody>
+                            <tr>
+                                <td class="text-right font-weight-bold text-nowrap border-0">Catégories TvHeadend :</td>
+                                <td class="w-100 border-0"><a asp-action="TvHeadendCategories">@db.TvHeadendCategories.Count()</a></td>
+                            </tr>
+                            <tr>
+                                <td class="text-right font-weight-bold text-nowrap border-0">Catégories XML :</td>
+                                <td class="w-100 border-0"><a asp-action="XmlCategories" asp-data-showAll="true">@db.XmlCategories.Count()</a></td>
+                            </tr>
+                            <tr>
+                                <td class="text-right font-weight-bold text-nowrap border-0">Catégories XML à affecter :</td>
+                                <td class="w-100 border-0"><a asp-action="XmlCategories">@db.XmlCategories.Count(x => !x.TvHeadendCategoryId.HasValue)</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="text-center mt-3">Résultat dernière intégration</h2>
+        <hr />
+        <div id="accordion">
+            @foreach (var xmlUrl in db.XmlUrls.OrderBy(x => x.Index))
+            {
+                var traces = db.Traces.Where(t => t.Filename == xmlUrl.Url).ToList();
+                traces = traces.Where(t => t.FileProcessingId == traces.Max(t => t.FileProcessingId)).ToList();
+
+                string border = null;
+                string button = null;
+
+                if (traces.Any(t => t.EventId >= 10000))
+                {
+                    border = "border-danger";
+                    button = "btn-danger";
+                }
+                else if (traces.Any(t => t.EventId >= 9000))
+                {
+                    border = "border-warning";
+                    button = "btn-warning";
+                }
+                else if (traces.Any(t => t.EventId > 0))
+                {
+                    border = "border-success";
+                    button = "btn-success";
+                }
+                else
+                {
+                    button = "btn-default";
+                }
+
+                <div class="card @border">
+                    <div class="card-header p-0 @border" id="h-@xmlUrl.Index">
+                        <button class="btn @button text-left w-100 border-0 font-weight-bold" data-toggle="collapse" data-target="#c-@xmlUrl.Index"
+                                aria-expanded="false" aria-controls="c-@xmlUrl.Index">
+                            @xmlUrl.Index. @xmlUrl.Url
+                        </button>
+                    </div>
+                    <div id="c-@xmlUrl.Index" class="collapse" aria-labelledby="h-@xmlUrl.Index" data-parent="#accordion">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th style="width:12%">Date/Heure</th>
+                                    <th style="width:8%">Level</th>
+                                    <th style="width:7%">EventId</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var trace in traces)
+                                {
+                                    <tr>
+                                        <td style="width:12%"><small>@trace.Date.ToString("dd/MM/yyyy HH:mm:ss")</small></td>
+                                        <td style="width:8%" class="@trace.LogLevel.ApplyStyle()"><small>@trace.LogLevel</small></td>
+                                        <td style="width:7%"><small>@trace.EventId</small></td>
+                                        <td><small>@Html.Raw(trace.Message.Nl2br())</small></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (lastError != null)
+        {
+            <h2 class="text-center mt-3">Dernière erreur globale</h2>
+            <hr />
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">@lastError.Date.ToString("dd/MM/yyyy 'à' HH:mm:ss")</div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <small>@Html.Raw(lastError.Message.Nl2br())</small>
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
+</div>

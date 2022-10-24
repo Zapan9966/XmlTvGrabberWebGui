@@ -1,0 +1,31 @@
+﻿@model XmlCategory
+
+@{
+    Layout = "_LayoutCategories.cshtml";
+}
+
+    <form method="post" asp-action="DeleteXmlCategory">
+        <input asp-for="XmlCategoryId" />
+        <input type="hidden" asp-for="TvHeadendCategoryId" />
+        <input type="hidden" asp-for="Name" />
+        <div class="text-center">
+            <h4>Confirmation suppression catégorie TvHeadend</h4>
+            <hr />
+            <p class="text-center">La catégorie '@Model.Name' sera définitivement supprimée.</p>
+            <p>Voulez-vous continuer ?</p>
+            <button type="submit" class="btn btn-outline-success mr-5">Oui</button>
+            <a class="btn btn-outline-danger ml-5" asp-action="XmlCategories">Non</a>
+        </div>
+    </form>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('form').on('submit', function () {
+                $(this).find('.btn').prop('disabled', true);
+            });
+
+        });
+    </script>
+}

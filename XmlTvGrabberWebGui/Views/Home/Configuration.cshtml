@@ -1,0 +1,67 @@
+﻿@model Config
+
+<div class="row mt-4">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                <h3>Configuration globale</h3>
+            </div>
+            <div class="card-body">
+                <form method="post" asp-action="Configuration">
+                    <partial name="_StatusMessage" model="@ViewData["StatusMessage"]" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input asp-for="ConfigId" />
+                    <div class="form-group mt-2">
+                        <label asp-for="OutputFilename"></label>
+                        <input asp-for="OutputFilename" class="form-control form-control-sm" placeholder="Nom fichier XML" />
+                        <span asp-validation-for="OutputFilename" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label asp-for="SockPath"></label>
+                        <input asp-for="SockPath" class="form-control form-control-sm" placeholder="Chemin sock Unix" />
+                        <span asp-validation-for="SockPath" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label asp-for="EpgDatabasePath"></label>
+                        <input asp-for="EpgDatabasePath" class="form-control form-control-sm" placeholder="Chemin base de données EPG" />
+                        <span asp-validation-for="EpgDatabasePath" class="text-danger"></span>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-3 offset-9">
+                            <button type="submit" class="btn btn-outline-success btn-block">Enregistrer</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                <h3>URLs fichiers XMLTV</h3>
+            </div>
+            <div class="card-body">
+                <component type="typeof(UrlsConfig)" render-mode="ServerPrerendered" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="_framework/blazor.server.js"></script>
+    <script>
+
+        function onBlazorReady() {
+            $("form").removeData("validator");
+            $("form").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse('form')
+        }
+
+        $(document).ready(function () {
+
+        });
+    </script>
+}
+
+
